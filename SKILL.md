@@ -1,6 +1,14 @@
 ---
 name: trampa-video
-description: Makes Trampa (trampa.app, the Croatian swap marketplace: trade things without money) brand videos at showreel level, rendered in code: 9:16 reels, TikTok/Shorts/Instagram spots, ads, promos, launch clips, bumpers. Brand-true (navy + orange, game-tile stickers, the slanted trade line, the arrows mark, Figtree/Bricolage), epic seamless transitions, real motion blur, code-made music and SFX, optional Croatian ElevenLabs voice-over, measured QC. Use when the user says "Trampa video", "Trampa reel", "video za Trampu", "napravi reel/oglas/promo za Trampu", "Trampa TikTok", "Trampa spot", "Trampa motion", "animiraj Trampu", or asks for any moving brand asset for Trampa.
+description: >-
+  Makes Trampa (trampa.app, the Croatian swap marketplace where people trade things without money)
+  brand videos at showreel level, rendered in code. 9:16 reels, TikTok, Shorts and Instagram spots,
+  ads, promos, launch clips, bumpers. Brand-true (navy and orange, game-tile stickers, the slanted
+  trade line, the arrows mark, Figtree and Bricolage), epic seamless transitions, real motion blur,
+  code-made music and SFX, optional Croatian ElevenLabs voice-over, measured QC. Use when the user
+  says "Trampa video", "Trampa reel", "video za Trampu", "napravi reel, oglas ili promo za Trampu",
+  "Trampa TikTok", "Trampa spot", "Trampa motion", "animiraj Trampu", or asks for any moving brand
+  asset for Trampa.
 ---
 
 # Trampa video
