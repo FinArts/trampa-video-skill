@@ -12,11 +12,20 @@ import { cpus, freemem } from "node:os"
 import path from "node:path"
 import { pathToFileURL, fileURLToPath } from "node:url"
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads"
+import v8 from "node:v8"
+import vm from "node:vm"
 import { Resvg } from "@resvg/resvg-js"
 import { resetIds } from "./brand.mjs"
 import { resetRegistry } from "./type.mjs"
 
 const PROBE_W = 270
+/** Composite frames (two worlds + mask) rasterise 3–4 full frames per sample: cap their samples. */
+const COMPOSITE_MAX_SAMPLES = 24
+
+// resvg's pixel buffers live outside the JS heap, so V8 barely feels them and a 48-sample frame can
+// leave gigabytes of garbage behind. Collect after every frame.
+v8.setFlagsFromString("--expose-gc")
+const gc = vm.runInNewContext("gc")
 
 const raster = (svg, width) => new Resvg(svg, { fitTo: { mode: "width", value: width }, font: { loadSystemFonts: false }, shapeRendering: 2 }).render().pixels
 
@@ -106,9 +115,10 @@ function renderFrame(film, i, o) {
   const [a, b] = shutter(t, o.fps, o.cuts)
   const crisp = (o.crisp || []).some(([c0, c1]) => t >= c0 && t <= c1)
   let n = 1
+  const composite = typeof frameSvg(film, t) !== "string"
   if (!crisp && b - a > 1e-5) {
     const blurPx = probe(film, a, b, o.W)
-    n = Math.max(1, Math.min(o.maxN, Math.ceil(blurPx / 1.2)))
+    n = Math.max(1, Math.min(o.maxN, composite ? COMPOSITE_MAX_SAMPLES : o.maxN, Math.ceil(blurPx / 1.2)))
   }
   if (n === 1) return { px: Buffer.from(rasterize(frameSvg(film, t), o.W)), n }
   let acc
@@ -119,6 +129,7 @@ function renderFrame(film, i, o) {
     for (let j = 0; j < px.length; j += 4) {
       acc[j] += TO_LIN[px[j]]; acc[j + 1] += TO_LIN[px[j + 1]]; acc[j + 2] += TO_LIN[px[j + 2]]
     }
+    if ((k + 1) % (composite ? 4 : 12) === 0) gc()
   }
   const out = Buffer.alloc(acc.length)
   const s = 4096 / n
@@ -137,6 +148,7 @@ if (!isMainThread) {
   parentPort.on("message", (i) => {
     const { px, n } = renderFrame(film, i, workerData.o)
     parentPort.postMessage({ i, n, px }, [px.buffer])
+    gc()
   })
   parentPort.postMessage({ ready: true })
 }

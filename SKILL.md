@@ -503,7 +503,9 @@ music energy) and change at least 3 of them for the next film.
   files UTF-8.
 - A still at time t shows the shutter average around t: check exact poses with `--stills`.
 - Memory: each render worker holds a few full-size float buffers; the pool is sized by free RAM
-  and cores (≤ 8), and a frame whose worker crashes is retried. If a render still dies with
+  and cores (≤ 8), garbage is collected after every frame (resvg's pixel buffers are invisible to
+  V8), composite frames cap at 24 blur samples, and a frame whose worker crashes is retried. A full
+  system drive also makes allocations fail: keep a few GB free on the drive that holds the page file. If a render still dies with
   `Array buffer allocation failed`, re-run with `--workers=4`.
 - QC measures the type you see: the box of the glyphs visible in each frame (animations and slots
   included). Type drawn inside a camera or scaled group needs `screen` (`screenOf` / `about`), or its
