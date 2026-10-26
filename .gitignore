@@ -1,0 +1,4 @@
+node_modules/
+engine/fonts/
+films/*/out/
+.DS_Store
